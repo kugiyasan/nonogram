@@ -22,7 +22,7 @@ pub fn PixelComponent(
         set_puzzle.update(|p| p.grid.set(Point { x, y }, new_pixel));
     };
     view! {cx,
-        <button on:click=on_click>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click=on_click>
             {format!("{:?}", pixel.clone())}
         </button>
     }
