@@ -1,8 +1,7 @@
 pub mod app;
-mod grid;
-mod puzzle;
-mod vecvec;
 mod components;
+mod pages;
+mod services;
 
 use cfg_if::cfg_if;
 

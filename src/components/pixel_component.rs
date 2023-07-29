@@ -1,6 +1,6 @@
 use leptos::*;
 
-use crate::{
+use crate::services::{
     grid::Point,
     puzzle::{Pixel, Puzzle},
 };
