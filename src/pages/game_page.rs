@@ -1,92 +1,76 @@
-use leptos::ev::MouseEvent;
 use leptos::*;
 
 use crate::components::pixel_component::PixelComponent;
-use crate::services::mouse_buttons::MouseButtons;
 use crate::services::point::Point;
-use crate::services::puzzle::{Pixel, Puzzle};
+use crate::services::puzzle::Puzzle;
 use crate::vecvec;
 
 fn create_puzzle() -> Puzzle {
-    let cols_hints = vecvec!([1], [4], [4], [4], [1, 6], [4], [4], [4]);
-    let rows_hints = vecvec![[1], [0], [1], [1], [6], [6], [6], [8]];
+    let cols_hints = vecvec!([1], [4], [4], [4], [1, 6], [4], [4], [1]);
+    let rows_hints = vecvec![[1], [], [1], [1], [6], [6], [6], [8]];
     // let cols_hints = vecvec!([1], [3], [1]);
     // let rows_hints = vecvec!([1], [1], [3]);
     Puzzle::new(cols_hints, rows_hints)
+}
+
+fn hint_to_string(hint: &[u32]) -> String {
+    if hint.len() == 0 {
+        return "0".to_string();
+    }
+
+    hint.iter()
+        .map(u32::to_string)
+        .collect::<Vec<_>>()
+        .join(", ")
 }
 
 #[component]
 pub fn GamePage(cx: Scope) -> impl IntoView {
     let puzzle = create_puzzle();
     let (puzzle, set_puzzle) = create_signal(cx, puzzle);
+    let (last_press, set_last_press) = create_signal(cx, None);
 
     let cols_hints_view = move || {
+        let puzzle = puzzle.get();
+
         puzzle
-            .get()
             .cols_hints()
             .iter()
-            .map(|hint| {
-                let hint = hint
-                    .iter()
-                    .map(u32::to_string)
-                    .collect::<Vec<_>>()
-                    .join("\n");
-
+            .enumerate()
+            .map(|(x, hint)| {
+                let is_column_done = puzzle.is_column_done(x);
+                let hint = hint_to_string(&hint);
                 view! { cx,
-                    <th>{hint}</th>
+                    <th class=("bg-gray-300", is_column_done)>
+                        {hint}
+                    </th>
                 }
             })
             .collect_view(cx)
     };
 
-    let (last_press, set_last_press) = create_signal(cx, None);
-
     let pixels = move || {
         let puzzle = puzzle.get();
         puzzle
-            .grid
-            .rows()
-            .enumerate()
-            .map(|(y, row)| {
-                let row_hints = puzzle.rows_hints()[y].clone();
+            .map_rows(|(y, row)| {
+                let is_row_done = puzzle.is_row_done(y);
+                let row_hints_view = hint_to_string(&puzzle.rows_hints()[y]);
                 let row_pixels = row
                     .iter()
                     .enumerate()
                     .map(|(x, &pixel)| {
-                        let on_mouse_down = move |_event: MouseEvent| {
-                            log!("on_mouse_down x:{} y:{}", x, y);
-                            let new_pixel = if pixel == Pixel::Filled {
-                                Pixel::Unknown
-                            } else {
-                                Pixel::Filled
-                            };
-                            set_puzzle.update(|p| p.grid.set(Point { x, y }, new_pixel));
-                            set_last_press(Some((Point::new(x, y), new_pixel)));
-                        };
-
-                        let on_mouse_enter = move |event: MouseEvent| {
-                            let primary = MouseButtons::Primary as u16;
-                            if event.buttons() & primary == primary {
-                                if let Some((point, new_pixel)) = last_press.get() {
-                                    set_puzzle.update(|p| p.grid.set(Point { x, y }, new_pixel));
-                                }
-                                log!("on_mouse_enter, primary pressed");
-                            }
-                        };
-
+                        let point = Point::new(x, y);
                         view! {cx,
-                            <PixelComponent
-                                pixel
-                                on_mouse_down
-                                on_mouse_enter
-                            />
+                            <PixelComponent point pixel set_puzzle last_press set_last_press />
                         }
                     })
                     .collect_view(cx);
 
                 view! { cx,
                     <tr>
-                        <th>{row_hints}</th>
+                        <th class=("bg-gray-300", is_row_done)>
+                            {row_hints_view}
+                        </th>
                         {row_pixels}
                     </tr>
                 }
@@ -100,7 +84,7 @@ pub fn GamePage(cx: Scope) -> impl IntoView {
     view! { cx,
         <table>
             <tr>
-                <th>Column hints</th>
+                <th class="w-24 h-24">Hints</th>
                 {cols_hints_view}
             </tr>
             {pixels}

@@ -37,12 +37,21 @@ impl Puzzle {
         &self.rows_hints
     }
 
-    pub fn is_row_done(&self, row_index: usize) -> bool {
-        self.consecutive_filled_squares_row(row_index) == self.rows_hints[row_index]
+    pub fn map_rows<'a, F, R>(&'a self, f: F) -> impl Iterator<Item = R> + 'a
+    where
+        F: FnMut((usize, &[Pixel])) -> R + 'a,
+    {
+        self.grid.rows().enumerate().map(f)
     }
 
-    pub fn consecutive_filled_squares_row(&self, row_index: usize) -> Vec<u32> {
-        Self::consecutive_filled_squares(self.grid.get_row(row_index))
+    pub fn is_column_done(&self, col_index: usize) -> bool {
+        let column = Self::consecutive_filled_squares(self.grid.get_column(col_index));
+        column == self.cols_hints[col_index]
+    }
+
+    pub fn is_row_done(&self, row_index: usize) -> bool {
+        let row = Self::consecutive_filled_squares(self.grid.get_row(row_index));
+        row == self.rows_hints[row_index]
     }
 
     fn consecutive_filled_squares<'a, I>(iterator: I) -> Vec<u32>
@@ -52,7 +61,7 @@ impl Puzzle {
         let mut result = vec![];
         let mut count = 0;
 
-        for (x, pixel) in iterator.enumerate() {
+        for pixel in iterator {
             if pixel == &Pixel::Filled {
                 count += 1;
             } else {

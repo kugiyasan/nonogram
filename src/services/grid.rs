@@ -16,17 +16,17 @@ impl<T: Clone> Grid<T> {
         }
     }
 
-    pub fn width(&self) -> usize {
-        self.width
-    }
-
-    pub fn height(&self) -> usize {
-        self.height
-    }
-
-    pub fn get(&self, p: Point) -> &T {
-        &self.grid[self.point_to_index(p)]
-    }
+    // pub fn width(&self) -> usize {
+    //     self.width
+    // }
+    //
+    // pub fn height(&self) -> usize {
+    //     self.height
+    // }
+    //
+    // pub fn get(&self, p: Point) -> &T {
+    //     &self.grid[self.point_to_index(p)]
+    // }
 
     pub fn set(&mut self, p: Point, value: T) {
         let i = self.point_to_index(p);
