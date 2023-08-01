@@ -19,7 +19,7 @@ pub fn App(cx: Scope) -> impl IntoView {
 
         // content for this welcome page
         <Router>
-            <main>
+            <main class="flex justify-center">
                 <Routes>
                     <Route path="/" view=HomePage/>
                     <Route path="/game" view=GamePage/>

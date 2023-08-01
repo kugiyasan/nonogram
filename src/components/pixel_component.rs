@@ -1,29 +1,30 @@
-use leptos::*;
+use leptos::{ev::MouseEvent, *};
 
-use crate::services::{
-    grid::Point,
-    puzzle::{Pixel, Puzzle},
-};
+use crate::services::puzzle::Pixel;
 
 #[component]
-pub fn PixelComponent(
+pub fn PixelComponent<F, G>(
     cx: Scope,
-    x: usize,
-    y: usize,
     pixel: Pixel,
-    set_puzzle: WriteSignal<Puzzle>,
-) -> impl IntoView {
-    let on_click = move |_event| {
-        let new_pixel = if pixel == Pixel::Filled {
-            Pixel::Unknown
-        } else {
-            Pixel::Filled
-        };
-        set_puzzle.update(|p| p.grid.set(Point { x, y }, new_pixel));
-    };
+    on_mouse_down: F,
+    on_mouse_enter: G,
+) -> impl IntoView
+where
+    F: Fn(MouseEvent) + 'static,
+    G: Fn(MouseEvent) + 'static,
+{
+    let is_filled = move || pixel == Pixel::Filled;
+
     view! {cx,
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click=on_click>
-            {format!("{:?}", pixel.clone())}
-        </button>
+        <td>
+            <button
+                class="hover:bg-gray-300 rounded aspect-square w-24"
+                class=("bg-black", is_filled)
+                class=("hover:bg-gray-700", is_filled)
+                on:mousedown=on_mouse_down
+                on:mouseenter=on_mouse_enter
+            >
+            </button>
+        </td>
     }
 }

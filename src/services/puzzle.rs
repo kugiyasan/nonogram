@@ -1,6 +1,5 @@
 use super::grid::Grid;
 
-
 type Hints = Vec<Vec<u32>>;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -28,5 +27,46 @@ impl Puzzle {
             cols_hints,
             rows_hints,
         }
+    }
+
+    pub fn cols_hints(&self) -> &Hints {
+        &self.cols_hints
+    }
+
+    pub fn rows_hints(&self) -> &Hints {
+        &self.rows_hints
+    }
+
+    pub fn is_row_done(&self, row_index: usize) -> bool {
+        self.consecutive_filled_squares_row(row_index) == self.rows_hints[row_index]
+    }
+
+    pub fn consecutive_filled_squares_row(&self, row_index: usize) -> Vec<u32> {
+        Self::consecutive_filled_squares(self.grid.get_row(row_index))
+    }
+
+    fn consecutive_filled_squares<'a, I>(iterator: I) -> Vec<u32>
+    where
+        I: Iterator<Item = &'a Pixel>,
+    {
+        let mut result = vec![];
+        let mut count = 0;
+
+        for (x, pixel) in iterator.enumerate() {
+            if pixel == &Pixel::Filled {
+                count += 1;
+            } else {
+                if count > 0 {
+                    result.push(count);
+                }
+                count = 0;
+            }
+        }
+
+        if count > 0 {
+            result.push(count);
+        }
+
+        result
     }
 }

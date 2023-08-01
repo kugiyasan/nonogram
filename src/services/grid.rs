@@ -1,8 +1,4 @@
-#[derive(Clone, Copy, Debug)]
-pub struct Point {
-    pub x: usize,
-    pub y: usize,
-}
+use crate::services::point::Point;
 
 #[derive(Clone, Debug)]
 pub struct Grid<T> {
@@ -20,11 +16,11 @@ impl<T: Clone> Grid<T> {
         }
     }
 
-    fn width(&self) -> usize {
+    pub fn width(&self) -> usize {
         self.width
     }
 
-    fn height(&self) -> usize {
+    pub fn height(&self) -> usize {
         self.height
     }
 
@@ -35,6 +31,20 @@ impl<T: Clone> Grid<T> {
     pub fn set(&mut self, p: Point, value: T) {
         let i = self.point_to_index(p);
         self.grid[i] = value;
+    }
+
+    pub fn rows(&self) -> impl Iterator<Item = &[T]> {
+        self.grid.chunks(self.width)
+    }
+
+    pub fn get_row(&self, row_index: usize) -> impl Iterator<Item = &T> {
+        let start = row_index * self.width;
+        let end = start + self.width;
+        self.grid[start..end].iter()
+    }
+
+    pub fn get_column(&self, column_index: usize) -> impl Iterator<Item = &T> {
+        self.grid.iter().skip(column_index).step_by(self.width)
     }
 
     pub fn enumerate(&self) -> impl Iterator<Item = ((usize, usize), &T)> {
