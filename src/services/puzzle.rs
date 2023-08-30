@@ -44,6 +44,12 @@ impl Puzzle {
         self.grid.rows().enumerate().map(f)
     }
 
+    pub fn is_puzzle_done(&self) -> bool {
+        let are_rows_done = (0..self.grid.width()).all(|i| self.is_column_done(i));
+        let are_cols_done = (0..self.grid.height()).all(|i| self.is_row_done(i));
+        are_rows_done && are_cols_done
+    }
+
     pub fn is_column_done(&self, col_index: usize) -> bool {
         let column = Self::consecutive_filled_squares(self.grid.get_column(col_index));
         column == self.cols_hints[col_index]

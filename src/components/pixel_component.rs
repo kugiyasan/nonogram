@@ -33,8 +33,8 @@ pub fn PixelComponent(
     let on_mouse_enter = move |event: MouseEvent| {
         let primary = MouseButtons::Primary as u16;
         if event.buttons() & primary == primary {
-            if let Some((point, new_pixel)) = last_press.get() {
-                set_puzzle.update(|p| p.grid.set(point, new_pixel));
+            if let Some((origin_point, pixel_state)) = last_press.get() {
+                set_puzzle.update(|puzzle| puzzle.grid.set(point, pixel_state));
             }
             log!("on_mouse_enter, primary pressed");
         }

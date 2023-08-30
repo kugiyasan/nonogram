@@ -78,8 +78,13 @@ pub fn GamePage(cx: Scope) -> impl IntoView {
             .collect_view(cx)
     };
 
-    // TODO use a canvas, to be able to swipe to change state of a row
-    // actually buttons with mousedown and mouseover events are enough
+    let is_puzzle_done = move || {
+        if puzzle.get().is_puzzle_done() {
+            Some("Congrats!")
+        } else {
+            None
+        }
+    };
 
     view! { cx,
         <table>
@@ -89,5 +94,6 @@ pub fn GamePage(cx: Scope) -> impl IntoView {
             </tr>
             {pixels}
         </table>
+        {is_puzzle_done}
     }
 }

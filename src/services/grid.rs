@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use crate::services::point::Point;
 
 #[derive(Clone, Debug)]
@@ -16,14 +18,14 @@ impl<T: Clone> Grid<T> {
         }
     }
 
-    // pub fn width(&self) -> usize {
-    //     self.width
-    // }
-    //
-    // pub fn height(&self) -> usize {
-    //     self.height
-    // }
-    //
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    pub fn height(&self) -> usize {
+        self.height
+    }
+
     // pub fn get(&self, p: Point) -> &T {
     //     &self.grid[self.point_to_index(p)]
     // }
